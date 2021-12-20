@@ -45,6 +45,7 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 
 	result := api.Build(api.BuildOptions{
 		EntryPoints: []string{m.Source},
+		Sourcemap:   api.SourceMapLinked,
 		Outfile:     m.Target,
 		Metafile:    true,
 		Write:       false,
