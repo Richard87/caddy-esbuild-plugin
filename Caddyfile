@@ -1,0 +1,11 @@
+{
+	order esbuild first
+	debug
+}
+
+:8080 {
+  file_server  {
+    root example/public
+  }
+  esbuild ./example/assets/index.js /build/index.js
+}
