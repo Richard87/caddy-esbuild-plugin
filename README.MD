@@ -17,11 +17,11 @@ It works right now in my ReactApp example, its also the only one I have tested s
 `Caddyfile`:
 ```
 {
-	order esbuild first
-	debug
+  order esbuild first
+  debug
 }
 
-localhost {
+localhost:8080 {
   file_server  {
     root example/public
   }
