@@ -1,10 +1,15 @@
 package caddy_esbuild_plugin
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/evanw/esbuild/pkg/api"
+	"hash"
+	"mime"
+	"path/filepath"
 	"strings"
 
 	"go.uber.org/zap"
@@ -17,6 +22,8 @@ type Esbuild struct {
 
 	logger  *zap.Logger
 	esbuild api.BuildResult
+	hasher  hash.Hash
+	hashes  map[string]string
 }
 
 func init() {
@@ -33,11 +40,21 @@ func (Esbuild) CaddyModule() caddy.ModuleInfo {
 
 func (m *Esbuild) Provision(ctx caddy.Context) error {
 	m.logger = ctx.Logger(m)
+	m.hasher = sha1.New()
+	m.hashes = make(map[string]string)
 
 	result := api.Build(api.BuildOptions{
 		EntryPoints: []string{m.Source},
 		Outfile:     m.Target,
+		Metafile:    true,
 		Write:       false,
+		Bundle:      true,
+		JSXMode:     api.JSXModeTransform,
+		Loader: map[string]api.Loader{
+			".png": api.LoaderDataURL,
+			".svg": api.LoaderDataURL,
+			".js":  api.LoaderJSX,
+		},
 		Watch: &api.WatchMode{
 			OnRebuild: m.onBuild,
 		},
@@ -50,6 +67,12 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 func (m *Esbuild) onBuild(result api.BuildResult) {
 	for _, f := range result.OutputFiles {
 		m.logger.Debug("Built file", zap.String("file", f.Path))
+		m.hasher.Write(f.Contents)
+		m.hashes[f.Path] = hex.EncodeToString(m.hasher.Sum(nil))
+	}
+
+	for _, err := range result.Errors {
+		m.logger.Error(err.Text)
 	}
 
 	if len(result.Errors) > 0 {
@@ -79,7 +102,14 @@ func (m *Esbuild) ServeHTTP(w http.ResponseWriter, r *http.Request, h caddyhttp.
 
 	for _, f := range m.esbuild.OutputFiles {
 		if strings.Index(r.RequestURI, f.Path) == 0 {
-			w.Header().Set("Content-type", "application/javascript")
+			cachedETag := r.Header.Get("If-None-Match")
+			if cachedETag == m.hashes[f.Path] {
+				w.WriteHeader(304) //No change
+				return nil
+			}
+
+			w.Header().Set("ETag", m.hashes[f.Path])
+			w.Header().Set("Content-type", guessContentType(f.Path))
 			w.WriteHeader(200)
 			_, _ = w.Write(f.Contents)
 			m.logger.Debug(fmt.Sprintf("esbuild handled %s", f.Path))
@@ -88,6 +118,17 @@ func (m *Esbuild) ServeHTTP(w http.ResponseWriter, r *http.Request, h caddyhttp.
 	}
 
 	return h.ServeHTTP(w, r)
+}
+
+func guessContentType(path string) string {
+	ext := filepath.Ext(path)
+	contentType := mime.TypeByExtension(ext)
+
+	if contentType != "" {
+		return contentType
+	}
+
+	return "application/javascript"
 }
 
 // Interface guards
