@@ -7,6 +7,7 @@ import (
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/evanw/esbuild/pkg/api"
+	"io/ioutil"
 	"mime"
 	"os"
 	"os/signal"
@@ -73,7 +74,12 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 	var plugins []api.Plugin
 
 	if m.AutoReload && isJsFile(m.Source) {
-		inject = append(inject, "./livereload-shim.js")
+		name, err := m.createAutoloadShimFile()
+		if err != nil {
+			m.logger.Error("Failed to create autoload shim", zap.Error(err))
+		} else {
+			inject = append(inject, name)
+		}
 	}
 	if m.Sass && sassPlugin != nil {
 		plugins = append(plugins, *sassPlugin)
@@ -102,6 +108,20 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 	m.onBuild(result)
 
 	return nil
+}
+
+func (m *Esbuild) createAutoloadShimFile() (string, error) {
+	livereload := "(() => {const es = new EventSource('%s/__livereload'); es.addEventListener('message', e => e.data === 'reload' && (es.close() || location.reload()))})()"
+	file, err := ioutil.TempFile(os.TempDir(), "caddy-esbuild-shim-*.js")
+	if err != nil {
+		return "", fmt.Errorf("autoload: failed to create tmpfile: %s", err)
+	}
+	_, err = file.Write([]byte(fmt.Sprintf(livereload, m.Target)))
+	if err != nil {
+		return "", fmt.Errorf("autoload: failed to write shim: %s", err)
+	}
+	name := file.Name()
+	return name, nil
 }
 
 func (m *Esbuild) onBuild(result api.BuildResult) {
@@ -141,7 +161,7 @@ func (m *Esbuild) ServeHTTP(w http.ResponseWriter, r *http.Request, h caddyhttp.
 		return h.ServeHTTP(w, r)
 	}
 
-	if r.RequestURI == "/__livereload" {
+	if r.RequestURI == m.Target+"/__livereload" {
 		_ = m.handleLiveReload(w, r)
 		return nil
 	}
