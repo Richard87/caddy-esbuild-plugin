@@ -9,7 +9,7 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
   - Remove `order esbuild first` config requirement
   - Test multiple entrypoints
 - include env support
-- include sass support (go-libsass)
+- [X] include sass support (go-libsass) (initial support, compile with `CGO_ENABLED=1 xcaddy build` to enable it 
 - [X] Live reload when code changes
 
 It works right now in my ReactApp example, its also the only one I have tested so far :)
