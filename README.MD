@@ -18,22 +18,29 @@ It works right now in my ReactApp example, its also the only one I have tested s
 `Caddyfile`:
 ```
 {
-  order esbuild first
-  debug
+	order esbuild first
+	debug
 }
 
 localhost:8080 {
   file_server  {
     root example/public
   }
-  esbuild ./example/src/index.js /_build
+  esbuild ./example/src/index.js {
+    auto_reload
+    target /_build
+    sass
+  }
 }
 ```
 
 Devlopment_ `xcaddy run -watch`
 
-Buiød caddy with: 
+Build caddy with: 
 ```shell
-xcaddy build \
-    --with github.com/richard87/caddy-esbuild-plugin
+# To enable sass:
+CGO_ENABLED=1 xcaddy build --with github.com/richard87/caddy-esbuild-plugin
+
+#without sass:
+xcaddy build --with github.com/richard87/caddy-esbuild-plugin
 ```
