@@ -17,13 +17,13 @@ var sassPlugin = &api.Plugin{
 		// Load ".txt" files and return an array of words
 		build.OnLoad(api.OnLoadOptions{Filter: `\.scss|sass$`},
 			func(args api.OnLoadArgs) (api.OnLoadResult, error) {
-				f, err := os.Open(args.Path)
+				fileHandle, err := os.Open(args.Path)
 				if err != nil {
 					return api.OnLoadResult{}, fmt.Errorf("sass: unable to open file: %s", err)
 				}
 
-				buf := new(bytes.Buffer)
-				comp, err := libsass.New(buf, f)
+				buffer := new(bytes.Buffer)
+				comp, err := libsass.New(buffer, fileHandle)
 				if err != nil {
 					return api.OnLoadResult{}, fmt.Errorf("sass: unable to load libsass: %s", err)
 				}
@@ -33,7 +33,7 @@ var sassPlugin = &api.Plugin{
 					return api.OnLoadResult{}, fmt.Errorf("sass: unable to compile: %s", err)
 				}
 
-				contents := buf.String()
+				contents := buffer.String()
 				return api.OnLoadResult{
 					Contents: &contents,
 					Loader:   api.LoaderCSS,
