@@ -18,6 +18,7 @@ function App() {
                 >
                     Learn React with EsBuild
                 </a>
+                <div className={"alert alert-primary"}><h1>Hello world!</h1></div>
             </header>
         </div>
     );

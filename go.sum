@@ -902,6 +902,14 @@ github.com/viant/assertly v0.4.8/go.mod h1:aGifi++jvCrUaklKEKT0BU95igDNaqkvz+49u
 github.com/viant/toolbox v0.24.0/go.mod h1:OxMCG57V0PXuIP2HNQrtJf2CjqdmbrOx5EkMILuUhzM=
 github.com/wellington/go-libsass v0.9.2 h1:6Ims04UDdBs6/CGSVK5JC8FNikR5ssrsMMKE/uaO5Q8=
 github.com/wellington/go-libsass v0.9.2/go.mod h1:mxgxgam0N0E+NAUMHLcu20Ccfc3mVpDkyrLDayqfiTs=
+github.com/wellington/go-libsass v0.9.3-0.20180616180904-a8861c8860b0 h1:nkDd0sxRh9j0NmAwpO1hT5K4NDqks1bLySZpriWaCZ8=
+github.com/wellington/go-libsass v0.9.3-0.20180616180904-a8861c8860b0/go.mod h1:mxgxgam0N0E+NAUMHLcu20Ccfc3mVpDkyrLDayqfiTs=
+github.com/wellington/go-libsass v0.9.3-0.20190211161420-e17b670b82b3 h1:QyotHK+ND+lwWJl5RSaIEavMwxz/CymfkueMp9juqb4=
+github.com/wellington/go-libsass v0.9.3-0.20190211161420-e17b670b82b3/go.mod h1:mxgxgam0N0E+NAUMHLcu20Ccfc3mVpDkyrLDayqfiTs=
+github.com/wellington/go-libsass v0.9.3-0.20190212124126-f870eaa15594 h1:Cm9ttMJaq5IYZW9RzserHlaibyWSwDJGt5upuKABoKs=
+github.com/wellington/go-libsass v0.9.3-0.20190212124126-f870eaa15594/go.mod h1:mxgxgam0N0E+NAUMHLcu20Ccfc3mVpDkyrLDayqfiTs=
+github.com/wellington/go-libsass v0.9.3-0.20201023163432-90bbc073a203 h1:m9SsgZCIXLdSvbm3vtIkFpdyk1jsu76CinQJZakCOZ4=
+github.com/wellington/go-libsass v0.9.3-0.20201023163432-90bbc073a203/go.mod h1:mxgxgam0N0E+NAUMHLcu20Ccfc3mVpDkyrLDayqfiTs=
 github.com/weppos/publicsuffix-go v0.4.0/go.mod h1:z3LCPQ38eedDQSwmsSRW4Y7t2L8Ln16JPQ02lHAdn5k=
 github.com/xanzy/go-gitlab v0.31.0/go.mod h1:sPLojNBn68fMUWSxIJtdVVIP8uSBYqesTfDUseX11Ug=
 github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0Bx9h2kr4=
@@ -1131,6 +1139,8 @@ golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420/go.mod h1:9nx3DQGgdP8bBQD5qx
 golang.org/x/net v0.0.0-20210525063256-abc453219eb5/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20210913180222-943fd674d43e h1:+b/22bPvDYt4NPDcy4xAGCmON713ONAWFeY3Z7I3tR8=
 golang.org/x/net v0.0.0-20210913180222-943fd674d43e/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
+golang.org/x/net v0.0.0-20211216030914-fe4d6282115f h1:hEYJvxw1lSnWIl8X9ofsYMklzaDs90JI2az5YMd4fPM=
+golang.org/x/net v0.0.0-20211216030914-fe4d6282115f/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20181017192945-9dcd33a902f4/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/oauth2 v0.0.0-20181106182150-f42d05182288/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=

@@ -1,5 +1,7 @@
-body {
-}
+@import "test";
+@import "../sub";
+@import "bootstrap/scss/bootstrap";
+
 .App {
   text-align: center;
 
@@ -20,7 +22,7 @@ body {
 }
 
 .App-header {
-  background: red !important;
+  background: $test;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

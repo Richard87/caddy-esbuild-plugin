@@ -10,6 +10,8 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
   - Test multiple entrypoints
 - include env support
 - [X] include sass support (go-libsass) (initial support, compile with `CGO_ENABLED=1 xcaddy build` to enable it 
+  - [X] Bug: Importing scss files inside of a sass file fails
+  - [ ] Bug: live-reloading doesnt work when chaning imported sass/css file
 - [X] Live reload when code changes
 
 It works right now in my ReactApp example, its also the only one I have tested so far :)

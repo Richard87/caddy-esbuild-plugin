@@ -125,12 +125,6 @@ func (m *Esbuild) createAutoloadShimFile() (string, error) {
 }
 
 func (m *Esbuild) onBuild(result api.BuildResult) {
-	for _, f := range result.OutputFiles {
-		m.logger.Debug("Built file", zap.String("file", f.Path))
-		hasher := sha1.New()
-		hasher.Write(f.Contents)
-		m.hashes[f.Path] = hex.EncodeToString(hasher.Sum(nil))
-	}
 
 	for _, err := range result.Errors {
 		m.logger.Error(err.Text)
@@ -138,8 +132,15 @@ func (m *Esbuild) onBuild(result api.BuildResult) {
 
 	if len(result.Errors) > 0 {
 		m.logger.Error(fmt.Sprintf("watch build failed: %d errors\n", len(result.Errors)))
+		return
 	} else {
 		m.logger.Info(fmt.Sprintf("watch build succeeded: %d warnings\n", len(result.Warnings)))
+	}
+	for _, f := range result.OutputFiles {
+		m.logger.Debug("Built file", zap.String("file", f.Path))
+		hasher := sha1.New()
+		hasher.Write(f.Contents)
+		m.hashes[f.Path] = hex.EncodeToString(hasher.Sum(nil))
 	}
 	m.esbuild = &result
 }

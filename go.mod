@@ -5,8 +5,7 @@ go 1.17
 require (
 	github.com/caddyserver/caddy/v2 v2.4.6
 	github.com/evanw/esbuild v0.14.6
-	github.com/wellington/go-libsass v0.9.2
-	go.step.sm/cli-utils v0.6.0
+	github.com/wellington/go-libsass v0.9.3-0.20201023163432-90bbc073a203
 	go.uber.org/zap v1.19.0
 )
 
@@ -86,7 +85,7 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20210915214749-c084706c2272 // indirect
 	golang.org/x/mod v0.4.2 // indirect
-	golang.org/x/net v0.0.0-20210913180222-943fd674d43e // indirect
+	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f // indirect
 	golang.org/x/sys v0.0.0-20210915083310-ed5796bab164 // indirect
 	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	golang.org/x/text v0.3.7 // indirect
