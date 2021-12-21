@@ -3,10 +3,11 @@
 This plugins watches and builds the source files continiusly in-memory. It includes a etag to cache in the browser to save bandwidth.
 
 ## TODO:
-- Better esbuild/Caddyfile configuration
+- [X] Better esbuild/Caddyfile configuration
   - Handle Loader configuration
   - Support esbuild config flags
   - Remove `order esbuild first` config requirement
+  - Test multiple entrypoints
 - include env support
 - include sass support (go-libsass)
 - [X] Live reload when code changes

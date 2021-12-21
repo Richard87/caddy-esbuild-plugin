@@ -7,5 +7,8 @@ localhost:8080 {
   file_server  {
     root example/public
   }
-  esbuild ./example/src/index.js /_build
+  esbuild ./example/src/index.js {
+    auto_reload
+    target /_build
+  }
 }

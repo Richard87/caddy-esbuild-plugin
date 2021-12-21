@@ -7,7 +7,6 @@ import (
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/evanw/esbuild/pkg/api"
-	"hash"
 	"mime"
 	"os"
 	"os/signal"
@@ -21,12 +20,12 @@ import (
 )
 
 type Esbuild struct {
-	Source string `json:"source,omitempty"`
-	Target string `json:"target,omitempty"`
+	Source     string `json:"source,omitempty"`
+	Target     string `json:"target,omitempty"`
+	AutoReload bool   `json:"auto_reload,omitempty"`
 
 	logger     *zap.Logger
 	esbuild    *api.BuildResult
-	hasher     hash.Hash
 	hashes     map[string]string
 	globalQuit chan struct{}
 }
@@ -67,13 +66,12 @@ func isJsFile(source string) bool {
 
 func (m *Esbuild) Provision(ctx caddy.Context) error {
 	m.logger = ctx.Logger(m)
-	m.hasher = sha1.New()
 	m.hashes = make(map[string]string)
 	m.globalQuit = make(chan struct{})
 	var inject []string
-	inject = append(inject, "./livereload-shim.js")
 
-	if isJsFile(m.Source) {
+	if m.AutoReload && isJsFile(m.Source) {
+		inject = append(inject, "./livereload-shim.js")
 	}
 	result := api.Build(api.BuildOptions{
 		EntryPoints: []string{m.Source},
@@ -102,8 +100,9 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 func (m *Esbuild) onBuild(result api.BuildResult) {
 	for _, f := range result.OutputFiles {
 		m.logger.Debug("Built file", zap.String("file", f.Path))
-		m.hasher.Write(f.Contents)
-		m.hashes[f.Path] = hex.EncodeToString(m.hasher.Sum(nil))
+		hasher := sha1.New()
+		hasher.Write(f.Contents)
+		m.hashes[f.Path] = hex.EncodeToString(hasher.Sum(nil))
 	}
 
 	for _, err := range result.Errors {
