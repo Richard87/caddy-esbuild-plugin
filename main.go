@@ -11,6 +11,7 @@ import (
 	"mime"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"go.uber.org/zap"
 	"net/http"
@@ -20,10 +21,17 @@ type Esbuild struct {
 	Source string `json:"source,omitempty"`
 	Target string `json:"target,omitempty"`
 
-	logger  *zap.Logger
-	esbuild api.BuildResult
-	hasher  hash.Hash
-	hashes  map[string]string
+	logger     *zap.Logger
+	esbuild    *api.BuildResult
+	hasher     hash.Hash
+	hashes     map[string]string
+	globalQuit chan struct{}
+}
+
+func (m *Esbuild) Cleanup() error {
+	m.logger.Error("Closing global quit!")
+	close(m.globalQuit)
+	return nil
 }
 
 func init() {
@@ -38,11 +46,33 @@ func (Esbuild) CaddyModule() caddy.ModuleInfo {
 	}
 }
 
+func isJsFile(source string) bool {
+	if strings.HasSuffix(source, ".js") {
+		return true
+	}
+	if strings.HasSuffix(source, ".jsx") {
+		return true
+	}
+	if strings.HasSuffix(source, ".ts") {
+		return true
+	}
+	if strings.HasSuffix(source, ".tsx") {
+		return true
+	}
+
+	return false
+}
+
 func (m *Esbuild) Provision(ctx caddy.Context) error {
 	m.logger = ctx.Logger(m)
 	m.hasher = sha1.New()
 	m.hashes = make(map[string]string)
+	m.globalQuit = make(chan struct{})
+	var inject []string
+	inject = append(inject, "./livereload-shim.js")
 
+	if isJsFile(m.Source) {
+	}
 	result := api.Build(api.BuildOptions{
 		EntryPoints: []string{m.Source},
 		Sourcemap:   api.SourceMapLinked,
@@ -51,6 +81,7 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 		Metafile:    true,
 		Write:       false,
 		Bundle:      true,
+		Inject:      inject,
 		JSXMode:     api.JSXModeTransform,
 		Loader: map[string]api.Loader{
 			".png": api.LoaderFile,
@@ -82,7 +113,7 @@ func (m *Esbuild) onBuild(result api.BuildResult) {
 	} else {
 		m.logger.Info(fmt.Sprintf("watch build succeeded: %d warnings\n", len(result.Warnings)))
 	}
-	m.esbuild = result
+	m.esbuild = &result
 }
 
 // Validate implements caddy.Validator.
@@ -102,24 +133,72 @@ func (m *Esbuild) ServeHTTP(w http.ResponseWriter, r *http.Request, h caddyhttp.
 		return h.ServeHTTP(w, r)
 	}
 
+	if r.RequestURI == "/__livereload" {
+		_ = m.handleLiveReload(w, r)
+		return nil
+	}
+
 	for _, f := range m.esbuild.OutputFiles {
 		if strings.Index(r.RequestURI, f.Path) == 0 {
-			cachedETag := r.Header.Get("If-None-Match")
-			if cachedETag == m.hashes[f.Path] {
-				w.WriteHeader(304) //No change
-				return nil
-			}
-
-			w.Header().Set("ETag", m.hashes[f.Path])
-			w.Header().Set("Content-type", guessContentType(f.Path))
-			w.WriteHeader(200)
-			_, _ = w.Write(f.Contents)
-			m.logger.Debug(fmt.Sprintf("esbuild handled %s", f.Path))
-			return nil
+			return m.handleAsset(w, r, f)
 		}
 	}
 
 	return h.ServeHTTP(w, r)
+}
+
+func (m *Esbuild) handleAsset(w http.ResponseWriter, r *http.Request, f api.OutputFile) error {
+	cachedETag := r.Header.Get("If-None-Match")
+	if cachedETag == m.hashes[f.Path] {
+		w.WriteHeader(304) //No change
+		return nil
+	}
+
+	w.Header().Set("ETag", m.hashes[f.Path])
+	w.Header().Set("Content-type", guessContentType(f.Path))
+	w.WriteHeader(200)
+	_, _ = w.Write(f.Contents)
+	m.logger.Debug(fmt.Sprintf("esbuild handled %s", f.Path))
+	return nil
+}
+
+func (m *Esbuild) handleLiveReload(w http.ResponseWriter, r *http.Request) error {
+	// Add headers needed for server-sent events (SSE):
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		m.logger.Debug("Your browser does not support server-sent events (SSE).")
+		return nil
+	} else {
+		m.logger.Debug("LiveReload started")
+	}
+
+	var lastPointer = m.esbuild
+
+	for {
+		compareTimeout := time.After(20 * time.Millisecond)
+		pingTimeout := time.After(10 * time.Second)
+		select {
+		case <-r.Context().Done():
+			m.logger.Debug("Connection close")
+			return nil
+		case <-m.globalQuit:
+			m.logger.Debug("Quit...")
+			return nil
+		case <-compareTimeout:
+			var currentPointer = m.esbuild
+			if lastPointer != currentPointer {
+				_, _ = fmt.Fprintf(w, "data: reload\n\n")
+				flusher.Flush()
+				lastPointer = m.esbuild
+			}
+		case <-pingTimeout:
+			_, _ = fmt.Fprintf(w, "data: p\n\n")
+			flusher.Flush()
+		}
+	}
 }
 
 func guessContentType(path string) string {
@@ -137,5 +216,6 @@ func guessContentType(path string) string {
 var (
 	_ caddy.Provisioner           = (*Esbuild)(nil)
 	_ caddy.Validator             = (*Esbuild)(nil)
+	_ caddy.CleanerUpper          = (*Esbuild)(nil)
 	_ caddyhttp.MiddlewareHandler = (*Esbuild)(nil)
 )

@@ -3,7 +3,7 @@
 	debug
 }
 
-:8080 {
+localhost:8082 {
   file_server  {
     root example/public
   }
