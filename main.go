@@ -23,6 +23,7 @@ type Esbuild struct {
 	Source     string `json:"source,omitempty"`
 	Target     string `json:"target,omitempty"`
 	AutoReload bool   `json:"auto_reload,omitempty"`
+	Sass       bool   `json:"sass,omitempty"`
 
 	logger     *zap.Logger
 	esbuild    *api.BuildResult
@@ -69,10 +70,15 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 	m.hashes = make(map[string]string)
 	m.globalQuit = make(chan struct{})
 	var inject []string
+	var plugins []api.Plugin
 
 	if m.AutoReload && isJsFile(m.Source) {
 		inject = append(inject, "./livereload-shim.js")
 	}
+	if m.Sass && sassPlugin != nil {
+		plugins = append(plugins, *sassPlugin)
+	}
+
 	result := api.Build(api.BuildOptions{
 		EntryPoints: []string{m.Source},
 		Sourcemap:   api.SourceMapLinked,
@@ -83,6 +89,7 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 		Bundle:      true,
 		Inject:      inject,
 		JSXMode:     api.JSXModeTransform,
+		Plugins:     plugins,
 		Loader: map[string]api.Loader{
 			".png": api.LoaderFile,
 			".svg": api.LoaderFile,

@@ -5,6 +5,8 @@ go 1.17
 require (
 	github.com/caddyserver/caddy/v2 v2.4.6
 	github.com/evanw/esbuild v0.14.6
+	github.com/wellington/go-libsass v0.9.2
+	go.step.sm/cli-utils v0.6.0
 	go.uber.org/zap v1.19.0
 )
 
@@ -78,7 +80,6 @@ require (
 	github.com/urfave/cli v1.22.5 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
-	go.step.sm/cli-utils v0.6.0 // indirect
 	go.step.sm/crypto v0.11.0 // indirect
 	go.step.sm/linkedca v0.5.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect

@@ -14,8 +14,11 @@ func init() {
 //     esbuild [source]
 //     esbuild ./assets/index.js {
 //        auto_reload
+//        sass
 //        target /_build
 //     }
+//
+//     sass requires cgo to work
 //
 // Only URI components which are given in <to> will be set in the resulting URI.
 // See the docs for the rewrite handler for more information.
@@ -30,6 +33,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	var esbuild Esbuild
 	esbuild.AutoReload = false
 	esbuild.Target = "/_build"
+	esbuild.Sass = false
 
 	// read the prefix to strip
 	esbuild.Source = h.Val()
@@ -38,6 +42,11 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 		switch h.Val() {
 		case "auto_reload":
 			esbuild.AutoReload = true
+		case "sass":
+			if sassPlugin == nil {
+				return nil, h.Err("sass requires caddy to be compiled with CGO and libsass available")
+			}
+			esbuild.Sass = true
 		case "target":
 			if !h.NextArg() {
 				return nil, h.ArgErr()
