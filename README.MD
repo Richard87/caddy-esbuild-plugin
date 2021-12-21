@@ -25,7 +25,7 @@ localhost:8080 {
   file_server  {
     root example/public
   }
-  esbuild ./example/src/index.js /build/index.js
+  esbuild ./example/src/index.js /_build
 }
 ```
 

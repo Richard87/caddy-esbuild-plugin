@@ -46,14 +46,15 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 	result := api.Build(api.BuildOptions{
 		EntryPoints: []string{m.Source},
 		Sourcemap:   api.SourceMapLinked,
-		Outfile:     m.Target,
+		Outdir:      m.Target,
+		PublicPath:  m.Target,
 		Metafile:    true,
 		Write:       false,
 		Bundle:      true,
 		JSXMode:     api.JSXModeTransform,
 		Loader: map[string]api.Loader{
-			".png": api.LoaderDataURL,
-			".svg": api.LoaderDataURL,
+			".png": api.LoaderFile,
+			".svg": api.LoaderFile,
 			".js":  api.LoaderJSX,
 		},
 		Watch: &api.WatchMode{

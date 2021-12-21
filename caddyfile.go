@@ -33,7 +33,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	if h.NextArg() {
 		esbuild.Target = h.Val()
 	} else {
-		esbuild.Target = esbuild.Source
+		esbuild.Target = "/_build"
 	}
 
 	return &esbuild, nil
