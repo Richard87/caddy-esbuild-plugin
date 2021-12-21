@@ -29,4 +29,10 @@ localhost:8080 {
 }
 ```
 
-Run with xcaddy run
+Devlopment_ `xcaddy run -watch`
+
+Buiød caddy with: 
+```shell
+xcaddy build \
+    --with github.com/richard87/caddy-esbuild-plugin
+```

@@ -1,4 +1,4 @@
-module caddy-esbuild-plugin
+module github.com/richard87/caddy-esbuild-plugin
 
 go 1.17
 
