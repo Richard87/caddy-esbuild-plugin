@@ -10,7 +10,6 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
 - include env support
 - include sass support (go-libsass)
 - [X] Live reload when code changes
-- Bug: Live reload keeps Caddy server running, how to close it on caddy "Shuttind down"
 
 It works right now in my ReactApp example, its also the only one I have tested so far :)
 

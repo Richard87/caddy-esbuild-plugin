@@ -9,8 +9,11 @@ import (
 	"github.com/evanw/esbuild/pkg/api"
 	"hash"
 	"mime"
+	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"go.uber.org/zap"
@@ -29,7 +32,6 @@ type Esbuild struct {
 }
 
 func (m *Esbuild) Cleanup() error {
-	m.logger.Error("Closing global quit!")
 	close(m.globalQuit)
 	return nil
 }
@@ -176,16 +178,18 @@ func (m *Esbuild) handleLiveReload(w http.ResponseWriter, r *http.Request) error
 	}
 
 	var lastPointer = m.esbuild
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	for {
 		compareTimeout := time.After(20 * time.Millisecond)
 		pingTimeout := time.After(10 * time.Second)
 		select {
 		case <-r.Context().Done():
-			m.logger.Debug("Connection close")
 			return nil
 		case <-m.globalQuit:
-			m.logger.Debug("Quit...")
+			return nil
+		case <-sigs:
 			return nil
 		case <-compareTimeout:
 			var currentPointer = m.esbuild
