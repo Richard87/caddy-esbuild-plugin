@@ -4,7 +4,7 @@
 	admin off
 }
 
-http://localhost:8080 {
+http://localhost:8085 {
   file_server  {
     root example/public
   }

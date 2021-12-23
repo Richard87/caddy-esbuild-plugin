@@ -30,7 +30,9 @@ localhost:8080 {
 }
 ```
 
-Devlopment_ `xcaddy run -watch`
+## Devlopment:
+
+To run: `xcaddy run -watch`
 
 Build caddy with: 
 ```shell

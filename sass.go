@@ -7,9 +7,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/evanw/esbuild/pkg/api"
-	"github.com/fsnotify/fsnotify"
 	libsass "github.com/wellington/go-libsass"
-	"go.uber.org/zap"
 	"os"
 	"path/filepath"
 )
@@ -61,46 +59,4 @@ func (m *Esbuild) createSassPlugin() *api.Plugin {
 				})
 		},
 	}
-}
-
-func (m *Esbuild) watchFiles(files []string) {
-
-	// creates a new file watcher
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		fmt.Println("ERROR", err)
-	}
-
-	//
-	done := make(chan bool)
-	defer watcher.Close()
-	defer close(done)
-
-	//
-	go func() {
-		for {
-			select {
-			// watch for events
-			case event := <-watcher.Events:
-				if event.Op == fsnotify.Write {
-					done <- true
-					m.logger.Debug("sass-file changed, rebuilding", zap.String("filename", event.Name), zap.Stringer("op", event.Op))
-					m.Rebuild()
-					return
-				}
-			case err := <-watcher.Errors:
-				m.logger.Error("sass: failed to watch files!", zap.Error(err))
-			case <-m.globalQuit:
-				done <- true
-			}
-		}
-	}()
-
-	for _, file := range files {
-		if err := watcher.Add(file); err != nil {
-			m.logger.Error("sass: failed to add file", zap.Error(err), zap.String("file", file))
-		}
-	}
-
-	<-done
 }
