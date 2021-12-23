@@ -10,7 +10,7 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
 - [X] Multiple entrypoint (v0.5.0) (filename must be different)
 - [X] Refactor to routes (v0.5.0) (`route /_build {esbuild assets/index.js env auto_reload sass}`)
 - [X] Custom loader configuration (v0.6.0)
-- [X] Enable hashed files with file_hash property
+- [X] Enable hashed files with file_hash property (v0.7.0)
 
 ## Configuration:
 `Caddyfile`:
