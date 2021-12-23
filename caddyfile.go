@@ -47,6 +47,8 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 				return nil, h.Err("sass requires caddy to be compiled with CGO and libsass available")
 			}
 			esbuild.Sass = true
+		case "env":
+			esbuild.Env = true
 		case "target":
 			if !h.NextArg() {
 				return nil, h.ArgErr()

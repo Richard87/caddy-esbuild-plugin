@@ -18,6 +18,7 @@ function App() {
                 >
                     Learn React with EsBuild
                 </a>
+                {process.env.REACT_APP_TEST}
                 <div className={"alert alert-primary"}><h1>Hello world!</h1></div>
             </header>
         </div>

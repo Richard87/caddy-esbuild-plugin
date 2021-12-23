@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type Esbuild struct {
@@ -15,11 +16,13 @@ type Esbuild struct {
 	Target     string `json:"target,omitempty"`
 	AutoReload bool   `json:"auto_reload,omitempty"`
 	Sass       bool   `json:"sass,omitempty"`
+	Env        bool   `json:"env,omitempty"`
 
-	logger     *zap.Logger
-	esbuild    *api.BuildResult
-	hashes     map[string]string
-	globalQuit chan struct{}
+	logger       *zap.Logger
+	esbuild      *api.BuildResult
+	hashes       map[string]string
+	globalQuit   chan struct{}
+	lastDuration *time.Duration
 }
 
 func (m *Esbuild) Cleanup() error {

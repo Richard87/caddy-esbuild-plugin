@@ -5,6 +5,8 @@ go 1.17
 require (
 	github.com/caddyserver/caddy/v2 v2.4.6
 	github.com/evanw/esbuild v0.14.6
+	github.com/fsnotify/fsnotify v1.4.9
+	github.com/joho/godotenv v1.3.0
 	github.com/wellington/go-libsass v0.9.3-0.20201023163432-90bbc073a203
 	go.uber.org/zap v1.19.0
 )
@@ -27,7 +29,6 @@ require (
 	github.com/dgraph-io/ristretto v0.0.4-0.20200906165740-41ebdbffecfd // indirect
 	github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 // indirect
 	github.com/dustin/go-humanize v1.0.1-0.20200219035652-afde56e7acac // indirect
-	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
@@ -79,6 +80,7 @@ require (
 	github.com/urfave/cli v1.22.5 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
+	go.step.sm/cli-utils v0.6.0 // indirect
 	go.step.sm/crypto v0.11.0 // indirect
 	go.step.sm/linkedca v0.5.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect

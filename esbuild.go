@@ -10,9 +10,16 @@ import (
 	"time"
 )
 
+type Process struct {
+	Env map[string]string `json:"env"`
+}
+
 func (m *Esbuild) initEsbuild() {
 	var inject []string
+	define := make(map[string]string)
 	var plugins []api.Plugin
+
+	plugins = append(plugins, m.createTimingPlugin())
 
 	if m.AutoReload && isJsFile(m.Source) {
 		name, err := m.createAutoloadShimFile()
@@ -32,12 +39,17 @@ func (m *Esbuild) initEsbuild() {
 		}
 	}
 
+	if m.Env {
+		define["process"] = m.handleEnv()
+	}
+
 	start := time.Now()
 	result := api.Build(api.BuildOptions{
 		EntryPoints: []string{m.Source},
 		Sourcemap:   api.SourceMapLinked,
 		Outdir:      m.Target,
 		PublicPath:  m.Target,
+		Define:      define,
 		Metafile:    true,
 		Write:       false,
 		Bundle:      true,
@@ -53,14 +65,15 @@ func (m *Esbuild) initEsbuild() {
 		Watch: &api.WatchMode{
 			OnRebuild: func(result api.BuildResult) {
 				m.logger.Debug("Rebuild completed!")
-				m.onBuild(result, 0)
+				m.onBuild(result, m.lastDuration)
 			},
 		},
 	})
 	duration := time.Now().Sub(start)
-	m.onBuild(result, duration)
+	m.onBuild(result, &duration)
 }
-func (m *Esbuild) onBuild(result api.BuildResult, duration time.Duration) {
+
+func (m *Esbuild) onBuild(result api.BuildResult, duration *time.Duration) {
 
 	for _, err := range result.Errors {
 		m.logger.Error(err.Text)
@@ -86,7 +99,7 @@ func (m *Esbuild) Rebuild() {
 		start := time.Now()
 		result := m.esbuild.Rebuild()
 		duration := time.Now().Sub(start)
-		m.onBuild(result, duration)
+		m.onBuild(result, &duration)
 	}
 }
 
