@@ -102,9 +102,11 @@ func (m *Esbuild) ServeHTTP(w http.ResponseWriter, r *http.Request, h caddyhttp.
 		return nil
 	}
 
-	for _, f := range m.esbuild.OutputFiles {
-		if strings.Index(r.RequestURI, f.Path) == 0 {
-			return m.handleAsset(w, r, f)
+	if m.esbuild != nil {
+		for _, f := range m.esbuild.OutputFiles {
+			if strings.Index(r.RequestURI, f.Path) == 0 {
+				return m.handleAsset(w, r, f)
+			}
 		}
 	}
 
