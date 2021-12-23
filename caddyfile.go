@@ -1,8 +1,10 @@
 package caddy_esbuild_plugin
 
 import (
+	"fmt"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"strings"
 )
 
 func init() {
@@ -23,20 +25,33 @@ func init() {
 // Only URI components which are given in <to> will be set in the resulting URI.
 // See the docs for the rewrite handler for more information.
 func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error) {
+	fmt.Print("!!!! Starting parsing caddyfile\n")
 	if !h.Next() {
-		return nil, h.ArgErr()
-	}
-	if !h.NextArg() {
 		return nil, h.ArgErr()
 	}
 
 	var esbuild Esbuild
-	esbuild.AutoReload = false
+
 	esbuild.Target = "/_build"
+	esbuild.AutoReload = false
 	esbuild.Sass = false
 
-	// read the prefix to strip
-	esbuild.Source = h.Val()
+	for h.NextArg() {
+		val := h.Val()
+		switch val {
+		case "live_reload":
+			esbuild.AutoReload = true
+		case "sass":
+			if esbuild.hasSassSupport() == false {
+				return nil, h.Err("sass requires caddy to be compiled with CGO and libsass available")
+			}
+			esbuild.Sass = true
+		case "env":
+			esbuild.Env = true
+		default:
+			esbuild.Sources = append(esbuild.Sources, val)
+		}
+	}
 
 	for nesting := h.Nesting(); h.NextBlock(nesting); {
 		switch h.Val() {
@@ -49,11 +64,27 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 			esbuild.Sass = true
 		case "env":
 			esbuild.Env = true
+		case "source":
+			if !h.NextArg() {
+				return nil, h.Err("source requires asset filename: source ./src/index.js")
+			}
+
+			source := h.Val()
+			esbuild.Sources = append(esbuild.Sources, source)
 		case "target":
 			if !h.NextArg() {
-				return nil, h.ArgErr()
+				return nil, h.Err("source requires path: target /build")
 			}
-			esbuild.Target = h.Val()
+
+			target := h.Val()
+			if !strings.HasPrefix(target, "/") {
+				target = "/" + target
+			}
+			if strings.HasSuffix(target, "/") {
+				target = strings.TrimSuffix(target, "/")
+			}
+
+			esbuild.Target = target
 		}
 	}
 

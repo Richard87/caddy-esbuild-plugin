@@ -12,7 +12,6 @@ import (
 )
 
 type Esbuild struct {
-	Source     string `json:"source,omitempty"`
 	Target     string `json:"target,omitempty"`
 	AutoReload bool   `json:"auto_reload,omitempty"`
 	Sass       bool   `json:"sass,omitempty"`
@@ -23,6 +22,7 @@ type Esbuild struct {
 	hashes       map[string]string
 	globalQuit   chan struct{}
 	lastDuration *time.Duration
+	Sources      []string `json:"source,omitempty"`
 }
 
 func (m *Esbuild) Cleanup() error {
@@ -53,17 +53,16 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 
 // Validate implements caddy.Validator.
 func (m *Esbuild) Validate() error {
-	if m.Source == "" {
+	if len(m.Sources) == 0 {
 		return fmt.Errorf("no source file")
 	}
 	if m.Target == "" {
-		return fmt.Errorf("no target file")
+		return fmt.Errorf("no target folder")
 	}
 	return nil
 }
 
 func (m *Esbuild) ServeHTTP(w http.ResponseWriter, r *http.Request, h caddyhttp.Handler) error {
-
 	if r.Method != "GET" {
 		return h.ServeHTTP(w, r)
 	}

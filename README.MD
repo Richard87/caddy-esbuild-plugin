@@ -7,7 +7,8 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
 - [X] SASS (v. 0.2.2)
 - [X] Manifest.json (v. 0.3.0) `/<target>/manifest.json`, defaults to `/_build/manifest.json`
 - [X] Env support (v.0.4.0)
-- [ ] Refactor to routes (v.0.5.0) (`route /_build {esbuild assets/index.js auto_reload sass}`)
+- [X] Multiple entrypoint (v.0.5.0) (filename must be different)
+- [X] Refactor to routes (v.0.5.0) (`route /_build {esbuild assets/index.js env auto_reload sass}`)
 - [ ] Custom loader configuration?
 
 ## Configuration:
@@ -15,18 +16,33 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
 ```
 {
   order esbuild first
-  debug
 }
 
 localhost:8080 {
   file_server  {
     root example/public
   }
-  esbuild ./example/src/index.js {
-    auto_reload
-    target /_build
+  esbuild {
+    env
     sass
+    live_reload
+    target /_build
+    source ./example/src/index.js
+    source ./example/src/index2.js
   }
+}
+```
+or a simplified version: 
+```
+{
+  order esbuild first
+}
+
+localhost:8080 {
+  file_server  {
+    root example/public
+  }
+  esbuild ./example/src/index.js live_reload sass env ./example/src/index2.js
 }
 ```
 

@@ -8,10 +8,6 @@ http://localhost:8080 {
   file_server  {
     root example/public
   }
-  esbuild ./example/src/index.js {
-    auto_reload
-    target /_build
-    sass
-    env
-  }
+
+  esbuild ./example/src/index.js live_reload sass env ./example/src/app2.js
 }

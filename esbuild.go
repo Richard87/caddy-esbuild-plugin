@@ -21,7 +21,7 @@ func (m *Esbuild) initEsbuild() {
 
 	plugins = append(plugins, m.createTimingPlugin())
 
-	if m.AutoReload && isJsFile(m.Source) {
+	if m.AutoReload {
 		name, err := m.createAutoloadShimFile()
 		if err != nil {
 			m.logger.Error("Failed to create autoload shim", zap.Error(err))
@@ -45,7 +45,7 @@ func (m *Esbuild) initEsbuild() {
 
 	start := time.Now()
 	result := api.Build(api.BuildOptions{
-		EntryPoints: []string{m.Source},
+		EntryPoints: m.Sources,
 		Sourcemap:   api.SourceMapLinked,
 		Outdir:      m.Target,
 		PublicPath:  m.Target,

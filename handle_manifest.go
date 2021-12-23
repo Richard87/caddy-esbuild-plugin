@@ -62,6 +62,8 @@ func (m *Esbuild) handleManifest(w http.ResponseWriter, r *http.Request) error {
 			//target is in form ../../../../_build/index.js
 			source, _ = filepath.Abs(target)
 		}
+
+		target, _ := filepath.Abs(target)
 		manifest[source] = target
 	}
 
