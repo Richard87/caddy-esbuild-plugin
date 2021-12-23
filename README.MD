@@ -11,6 +11,7 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
 - [X] Refactor to routes (v0.5.0) (`route /_build {esbuild assets/index.js env auto_reload sass}`)
 - [X] Custom loader configuration (v0.6.0)
 - [X] Enable hashed files with file_hash property (v0.7.0)
+- [X] Enable defines (v0.8.0)
 
 ## Configuration:
 `Caddyfile`:
@@ -34,6 +35,7 @@ localhost:8080 {
     loader .svg file
     loader .json json
     loader .js jsx
+    define global window
   }
 }
 ```
