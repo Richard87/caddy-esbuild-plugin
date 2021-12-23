@@ -7,4 +7,9 @@ import (
 	"github.com/evanw/esbuild/pkg/api"
 )
 
-var sassPlugin = (*api.Plugin)(nil)
+func (m *Esbuild) createSassPlugin() *api.Plugin {
+	return nil
+}
+func (m *Esbuild) hasSassSupport() bool {
+	return false
+}

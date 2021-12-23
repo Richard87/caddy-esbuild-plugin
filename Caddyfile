@@ -1,9 +1,10 @@
 {
 	order esbuild first
 	debug
+	admin off
 }
 
-http://localhost:8082 {
+http://localhost:8080 {
   file_server  {
     root example/public
   }

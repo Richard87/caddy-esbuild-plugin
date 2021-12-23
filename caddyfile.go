@@ -43,7 +43,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 		case "auto_reload":
 			esbuild.AutoReload = true
 		case "sass":
-			if sassPlugin == nil {
+			if esbuild.hasSassSupport() == false {
 				return nil, h.Err("sass requires caddy to be compiled with CGO and libsass available")
 			}
 			esbuild.Sass = true
