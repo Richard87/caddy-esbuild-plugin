@@ -35,6 +35,10 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	esbuild.Target = "/_build"
 	esbuild.AutoReload = false
 	esbuild.Sass = false
+	esbuild.Loader = map[string]string{}
+	esbuild.Loader[".png"] = "file"
+	esbuild.Loader[".svg"] = "file"
+	esbuild.Loader[".js"] = "jsx"
 
 	for h.NextArg() {
 		val := h.Val()
@@ -85,7 +89,20 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 			}
 
 			esbuild.Target = target
+		case "loader":
+			if !h.NextArg() {
+				return nil, h.Err("loader require filetype and loader: loader .svg text")
+			}
+			filetype := h.Val()
+
+			if !h.NextArg() {
+				return nil, h.Err("loader require filetype and loader: loader .svg text")
+			}
+			loaderValue := h.Val()
+
+			esbuild.Loader[filetype] = loaderValue
 		}
+
 	}
 
 	return &esbuild, nil

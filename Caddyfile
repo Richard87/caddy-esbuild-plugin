@@ -9,5 +9,15 @@ http://localhost:8080 {
     root example/public
   }
 
-  esbuild ./example/src/index.js live_reload sass env ./example/src/app2.js
+  esbuild {
+    source ./example/src/index.js
+    source ./example/src/global.css
+    target /build/v2
+    live_reload
+    sass
+    env
+    loader .png dataurl
+    loader .svg file
+    loader .json json
+  }
 }

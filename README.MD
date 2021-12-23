@@ -3,13 +3,13 @@
 This plugins watches and builds the source files continiusly in-memory. It includes a etag to cache in the browser to save bandwidth.
 
 ## Features:
-- [X] Live reload (v.0.1.0)
-- [X] SASS (v. 0.2.2)
-- [X] Manifest.json (v. 0.3.0) `/<target>/manifest.json`, defaults to `/_build/manifest.json`
-- [X] Env support (v.0.4.0)
-- [X] Multiple entrypoint (v.0.5.0) (filename must be different)
-- [X] Refactor to routes (v.0.5.0) (`route /_build {esbuild assets/index.js env auto_reload sass}`)
-- [ ] Custom loader configuration?
+- [X] Live reload (v0.1.0)
+- [X] SASS (v0.2.2)
+- [X] Manifest.json (v0.3.0) `/<target>/manifest.json`, defaults to `/_build/manifest.json`
+- [X] Env support (v0.4.0)
+- [X] Multiple entrypoint (v0.5.0) (filename must be different)
+- [X] Refactor to routes (v0.5.0) (`route /_build {esbuild assets/index.js env auto_reload sass}`)
+- [X] Custom loader configuration (v0.6.0)
 
 ## Configuration:
 `Caddyfile`:
@@ -29,6 +29,10 @@ localhost:8080 {
     target /_build
     source ./example/src/index.js
     source ./example/src/index2.js
+    loader .png dataurl
+    loader .svg file
+    loader .json json
+    loader .js jsx
   }
 }
 ```

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/evanw/esbuild/pkg/api"
 	"go.uber.org/zap"
-	"strings"
 	"time"
 )
 
@@ -44,6 +43,12 @@ func (m *Esbuild) initEsbuild() {
 	}
 
 	start := time.Now()
+	loader := map[string]api.Loader{}
+	for ext, l := range m.Loader {
+		parseLoader, _ := ParseLoader(l)
+		loader[ext] = parseLoader
+	}
+
 	result := api.Build(api.BuildOptions{
 		EntryPoints: m.Sources,
 		Sourcemap:   api.SourceMapLinked,
@@ -57,11 +62,7 @@ func (m *Esbuild) initEsbuild() {
 		JSXMode:     api.JSXModeTransform,
 		Plugins:     plugins,
 		Incremental: true,
-		Loader: map[string]api.Loader{
-			".png": api.LoaderFile,
-			".svg": api.LoaderFile,
-			".js":  api.LoaderJSX,
-		},
+		Loader:      loader,
 		Watch: &api.WatchMode{
 			OnRebuild: func(result api.BuildResult) {
 				m.logger.Debug("Rebuild completed!")
@@ -103,19 +104,33 @@ func (m *Esbuild) Rebuild() {
 	}
 }
 
-func isJsFile(source string) bool {
-	if strings.HasSuffix(source, ".js") {
-		return true
+func ParseLoader(text string) (api.Loader, error) {
+	switch text {
+	case "js":
+		return api.LoaderJS, nil
+	case "jsx":
+		return api.LoaderJSX, nil
+	case "ts":
+		return api.LoaderTS, nil
+	case "tsx":
+		return api.LoaderTSX, nil
+	case "css":
+		return api.LoaderCSS, nil
+	case "json":
+		return api.LoaderJSON, nil
+	case "text":
+		return api.LoaderText, nil
+	case "base64":
+		return api.LoaderBase64, nil
+	case "dataurl":
+		return api.LoaderDataURL, nil
+	case "file":
+		return api.LoaderFile, nil
+	case "binary":
+		return api.LoaderBinary, nil
+	case "default":
+		return api.LoaderDefault, nil
+	default:
+		return api.LoaderNone, fmt.Errorf("Invalid loader value: %q", text)
 	}
-	if strings.HasSuffix(source, ".jsx") {
-		return true
-	}
-	if strings.HasSuffix(source, ".ts") {
-		return true
-	}
-	if strings.HasSuffix(source, ".tsx") {
-		return true
-	}
-
-	return false
 }

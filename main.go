@@ -12,10 +12,11 @@ import (
 )
 
 type Esbuild struct {
-	Target     string `json:"target,omitempty"`
-	AutoReload bool   `json:"auto_reload,omitempty"`
-	Sass       bool   `json:"sass,omitempty"`
-	Env        bool   `json:"env,omitempty"`
+	Target     string            `json:"target,omitempty"`
+	AutoReload bool              `json:"auto_reload,omitempty"`
+	Sass       bool              `json:"sass,omitempty"`
+	Env        bool              `json:"env,omitempty"`
+	Loader     map[string]string `json:"loader,omitempty"`
 
 	logger       *zap.Logger
 	esbuild      *api.BuildResult
@@ -59,6 +60,14 @@ func (m *Esbuild) Validate() error {
 	if m.Target == "" {
 		return fmt.Errorf("no target folder")
 	}
+
+	for _, l := range m.Loader {
+		_, err := ParseLoader(l)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
