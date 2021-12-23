@@ -36,6 +36,13 @@ type Input struct {
 
 func (m *Esbuild) handleManifest(w http.ResponseWriter, r *http.Request) error {
 
+	if m.esbuild == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		_, _ = w.Write([]byte("{}"))
+		return nil
+	}
+
 	sha := sha1.New()
 	sha.Write([]byte(m.esbuild.Metafile))
 	etag := hex.EncodeToString(sha.Sum(nil))
