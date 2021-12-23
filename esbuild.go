@@ -89,6 +89,7 @@ func (m *Esbuild) initEsbuild() {
 
 func (m *Esbuild) onBuild(result api.BuildResult, duration *time.Duration) {
 
+	m.esbuild = &result
 	for _, err := range result.Errors {
 		m.logger.Error(err.Text)
 	}
