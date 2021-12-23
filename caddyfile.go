@@ -106,6 +106,18 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 			loaderValue := h.Val()
 
 			esbuild.Loader[filetype] = loaderValue
+		case "define":
+			if !h.NextArg() {
+				return nil, h.Err("loader require filetype and loader: loader .svg text")
+			}
+			define := h.Val()
+
+			if !h.NextArg() {
+				return nil, h.Err("loader require filetype and loader: loader .svg text")
+			}
+			value := h.Val()
+
+			esbuild.Defines[define] = value
 		}
 
 	}

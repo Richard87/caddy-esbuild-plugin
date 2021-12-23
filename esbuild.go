@@ -17,7 +17,6 @@ type Process struct {
 
 func (m *Esbuild) initEsbuild() {
 	var inject []string
-	define := make(map[string]string)
 	var plugins []api.Plugin
 
 	plugins = append(plugins, m.createTimingPlugin())
@@ -41,7 +40,7 @@ func (m *Esbuild) initEsbuild() {
 	}
 
 	if m.Env {
-		define["process"] = m.handleEnv()
+		m.Defines["process"] = m.handleEnv()
 	}
 
 	start := time.Now()
@@ -67,7 +66,7 @@ func (m *Esbuild) initEsbuild() {
 		Outdir:      m.Target,
 		EntryNames:  entryName,
 		PublicPath:  m.Target,
-		Define:      define,
+		Define:      m.Defines,
 		Metafile:    true,
 		Write:       false,
 		Bundle:      true,
