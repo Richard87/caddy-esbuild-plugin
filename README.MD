@@ -2,23 +2,20 @@
 
 This plugins watches and builds the source files continiusly in-memory. It includes a etag to cache in the browser to save bandwidth.
 
-## TODO:
-- [X] Better esbuild/Caddyfile configuration
-  - Handle Loader configuration
-- include env support
-- [X] include sass support (go-libsass) (initial support, compile with `CGO_ENABLED=1 xcaddy build` to enable it 
-  - [X] Bug: Importing scss files inside of a sass file fails
-  - [X] Bug: live-reloading doesnt work when chaning imported sass/css file
-- [X] Live reload when code changes
-
-It works right now in my ReactApp example, its also the only one I have tested so far :)
+## Features:
+- [X] Live reload (v.0.1.0)
+- [X] SASS (v. 0.2.2)
+- [ ] Manufest.json (v. 0.3.0)
+- [ ] Env support (v.0.4.0)
+- [ ] Refactor to routes (v.0.5.0) (`route /_build {esbuild assets/index.js auto_reload sass}`)
+- [ ] Custom loader configuration?
 
 ## Configuration:
 `Caddyfile`:
 ```
 {
-	order esbuild first
-	debug
+  order esbuild first
+  debug
 }
 
 localhost:8080 {
