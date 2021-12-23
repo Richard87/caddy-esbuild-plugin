@@ -37,6 +37,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	esbuild.Sass = false
 	esbuild.FileHash = false
 	esbuild.Loader = map[string]string{}
+	esbuild.Defines = map[string]string{}
 	esbuild.Loader[".png"] = "file"
 	esbuild.Loader[".svg"] = "file"
 	esbuild.Loader[".js"] = "jsx"
