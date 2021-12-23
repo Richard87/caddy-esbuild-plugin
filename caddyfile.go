@@ -33,7 +33,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	var esbuild Esbuild
 
 	esbuild.Target = "/_build"
-	esbuild.AutoReload = false
+	esbuild.LiveReload = false
 	esbuild.Sass = false
 	esbuild.Loader = map[string]string{}
 	esbuild.Loader[".png"] = "file"
@@ -44,7 +44,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 		val := h.Val()
 		switch val {
 		case "live_reload":
-			esbuild.AutoReload = true
+			esbuild.LiveReload = true
 		case "sass":
 			if esbuild.hasSassSupport() == false {
 				return nil, h.Err("sass requires caddy to be compiled with CGO and libsass available")
@@ -59,8 +59,8 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 
 	for nesting := h.Nesting(); h.NextBlock(nesting); {
 		switch h.Val() {
-		case "auto_reload":
-			esbuild.AutoReload = true
+		case "live_reload":
+			esbuild.LiveReload = true
 		case "sass":
 			if esbuild.hasSassSupport() == false {
 				return nil, h.Err("sass requires caddy to be compiled with CGO and libsass available")

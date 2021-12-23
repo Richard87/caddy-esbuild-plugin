@@ -13,7 +13,7 @@ import (
 
 type Esbuild struct {
 	Target     string            `json:"target,omitempty"`
-	AutoReload bool              `json:"auto_reload,omitempty"`
+	LiveReload bool              `json:"auto_reload,omitempty"`
 	Sass       bool              `json:"sass,omitempty"`
 	Env        bool              `json:"env,omitempty"`
 	Loader     map[string]string `json:"loader,omitempty"`
@@ -47,8 +47,24 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 	m.logger = ctx.Logger(m)
 	m.hashes = make(map[string]string)
 	m.globalQuit = make(chan struct{})
+	go m.initEsbuild()
 
-	m.initEsbuild()
+	var sources []string
+	for _, s := range m.Sources {
+		sources = append(sources, s)
+	}
+	var loaders []string
+	for ext, l := range m.Loader {
+		loaders = append(loaders, ext+"="+l)
+	}
+
+	m.logger.Info("Initialized esbuild",
+		zap.String("target", m.Target),
+		zap.Strings("sources", sources),
+		zap.Strings("loaders", loaders),
+		zap.Bool("sass", m.Sass),
+		zap.Bool("env", m.Env),
+		zap.Bool("live_reload", m.LiveReload))
 	return nil
 }
 

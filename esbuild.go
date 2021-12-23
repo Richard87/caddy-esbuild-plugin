@@ -20,7 +20,7 @@ func (m *Esbuild) initEsbuild() {
 
 	plugins = append(plugins, m.createTimingPlugin())
 
-	if m.AutoReload {
+	if m.LiveReload {
 		name, err := m.createAutoloadShimFile()
 		if err != nil {
 			m.logger.Error("Failed to create autoload shim", zap.Error(err))
