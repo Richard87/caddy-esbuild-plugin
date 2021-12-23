@@ -17,6 +17,7 @@ type Esbuild struct {
 	Sass       bool              `json:"sass,omitempty"`
 	Env        bool              `json:"env,omitempty"`
 	Loader     map[string]string `json:"loader,omitempty"`
+	FileHash   bool              `json:"file_hash,omitempty"`
 
 	logger       *zap.Logger
 	esbuild      *api.BuildResult

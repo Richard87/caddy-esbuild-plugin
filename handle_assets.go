@@ -17,6 +17,11 @@ func (m *Esbuild) handleAsset(w http.ResponseWriter, r *http.Request, f api.Outp
 
 	w.Header().Set("ETag", m.hashes[f.Path])
 	w.Header().Set("Content-type", guessContentType(f.Path))
+
+	if m.FileHash {
+		w.Header().Set("Cache-Control", "public,max-age=31536000")
+	}
+
 	w.WriteHeader(200)
 	_, _ = w.Write(f.Contents)
 	m.logger.Debug(fmt.Sprintf("esbuild handled %s", f.Path))

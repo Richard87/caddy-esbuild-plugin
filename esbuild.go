@@ -49,10 +49,16 @@ func (m *Esbuild) initEsbuild() {
 		loader[ext] = parseLoader
 	}
 
+	entryName := "[name]"
+	if m.FileHash {
+		entryName = "[name]-[hash]"
+	}
+
 	result := api.Build(api.BuildOptions{
 		EntryPoints: m.Sources,
 		Sourcemap:   api.SourceMapLinked,
 		Outdir:      m.Target,
+		EntryNames:  entryName,
 		PublicPath:  m.Target,
 		Define:      define,
 		Metafile:    true,

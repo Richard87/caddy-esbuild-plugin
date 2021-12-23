@@ -35,6 +35,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	esbuild.Target = "/_build"
 	esbuild.LiveReload = false
 	esbuild.Sass = false
+	esbuild.FileHash = false
 	esbuild.Loader = map[string]string{}
 	esbuild.Loader[".png"] = "file"
 	esbuild.Loader[".svg"] = "file"
@@ -43,6 +44,8 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	for h.NextArg() {
 		val := h.Val()
 		switch val {
+		case "file_hash":
+			esbuild.FileHash = true
 		case "live_reload":
 			esbuild.LiveReload = true
 		case "sass":
@@ -59,6 +62,8 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 
 	for nesting := h.Nesting(); h.NextBlock(nesting); {
 		switch h.Val() {
+		case "file_hash":
+			esbuild.FileHash = true
 		case "live_reload":
 			esbuild.LiveReload = true
 		case "sass":
