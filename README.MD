@@ -55,8 +55,7 @@ localhost:8080 {
 ```
 
 ## Documentation:
-- Env support: esbuild will include all environment variables starting with `REACT_APP_` and bundle it with your application,
-  **including unused items**. It will scan any `.env`, `.env.<NODE_ENV>`, `.env.local`, `.env.<NODE_ENV>.local`, and the runtime environment for relevant variables.  
+- Env support: It will scan any `.env`, `.env.<NODE_ENV>`, `.env.local`, `.env.<NODE_ENV>.local`, and the runtime environment for relevant variables.  
   It will however not watch them changes or auto-reload them. 
 
 ## Devlopment:

@@ -40,9 +40,7 @@ func (m *Esbuild) initEsbuild() {
 	}
 
 	if m.Env {
-		env := m.handleEnv()
-		m.logger.Debug("test", zap.String("env", env), zap.String("defines", fmt.Sprint(m.Defines)))
-		m.Defines["process"] = env
+		m.handleEnv()
 	}
 
 	start := time.Now()
