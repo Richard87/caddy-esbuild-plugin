@@ -12,6 +12,7 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
 - [X] Custom loader configuration (v0.6.0)
 - [X] Enable hashed files with file_hash property (v0.7.0)
 - [X] Enable defines (v0.8.0)
+- [X] Ouptut alias (v0.9.0)
 
 ## Configuration:
 `Caddyfile`:
@@ -30,7 +31,7 @@ localhost:8080 {
     live_reload
     target /_build
     source ./example/src/index.js
-    source ./example/src/index2.js
+    source ./example/src/index.css global
     loader .png dataurl
     loader .svg file
     loader .json json
