@@ -1,9 +1,10 @@
 package caddy_esbuild_plugin
 
 import (
-	"fmt"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"github.com/evanw/esbuild/pkg/api"
+	"path/filepath"
 	"strings"
 )
 
@@ -25,7 +26,6 @@ func init() {
 // Only URI components which are given in <to> will be set in the resulting URI.
 // See the docs for the rewrite handler for more information.
 func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error) {
-	fmt.Print("!!!! Starting parsing caddyfile\n")
 	if !h.Next() {
 		return nil, h.ArgErr()
 	}
@@ -36,8 +36,8 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	esbuild.LiveReload = false
 	esbuild.Sass = false
 	esbuild.FileHash = false
-	esbuild.Loader = map[string]string{}
-	esbuild.Defines = map[string]string{}
+	esbuild.Loader = make(map[string]string)
+	esbuild.Defines = make(map[string]string)
 	esbuild.Loader[".png"] = "file"
 	esbuild.Loader[".svg"] = "file"
 	esbuild.Loader[".js"] = "jsx"
@@ -57,7 +57,12 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 		case "env":
 			esbuild.Env = true
 		default:
-			esbuild.Sources = append(esbuild.Sources, val)
+			alias := parseSourceName(val)
+
+			esbuild.Sources = append(esbuild.Sources, api.EntryPoint{
+				OutputPath: alias,
+				InputPath:  val,
+			})
 		}
 	}
 
@@ -80,7 +85,15 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 			}
 
 			source := h.Val()
-			esbuild.Sources = append(esbuild.Sources, source)
+			alias := parseSourceName(source)
+			if h.NextArg() {
+				alias = h.Val()
+			}
+
+			esbuild.Sources = append(esbuild.Sources, api.EntryPoint{
+				OutputPath: alias,
+				InputPath:  source,
+			})
 		case "target":
 			if !h.NextArg() {
 				return nil, h.Err("source requires path: target /build")
@@ -124,4 +137,10 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	}
 
 	return &esbuild, nil
+}
+
+func parseSourceName(source string) string {
+	alias := filepath.Base(source)
+	alias = strings.TrimSuffix(alias, filepath.Ext(alias))
+	return alias
 }

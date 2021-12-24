@@ -40,7 +40,9 @@ func (m *Esbuild) initEsbuild() {
 	}
 
 	if m.Env {
-		m.Defines["process"] = m.handleEnv()
+		env := m.handleEnv()
+		m.logger.Debug("test", zap.String("env", env), zap.String("defines", fmt.Sprint(m.Defines)))
+		m.Defines["process"] = env
 	}
 
 	start := time.Now()
@@ -60,21 +62,21 @@ func (m *Esbuild) initEsbuild() {
 	nodePaths, _ := filepath.Glob(pattern)
 
 	result := api.Build(api.BuildOptions{
-		EntryPoints: m.Sources,
-		NodePaths:   nodePaths,
-		Sourcemap:   api.SourceMapLinked,
-		Outdir:      m.Target,
-		EntryNames:  entryName,
-		PublicPath:  m.Target,
-		Define:      m.Defines,
-		Metafile:    true,
-		Write:       false,
-		Bundle:      true,
-		Inject:      inject,
-		JSXMode:     api.JSXModeTransform,
-		Plugins:     plugins,
-		Incremental: true,
-		Loader:      loader,
+		EntryPointsAdvanced: m.Sources,
+		NodePaths:           nodePaths,
+		Sourcemap:           api.SourceMapLinked,
+		Outdir:              m.Target,
+		EntryNames:          entryName,
+		PublicPath:          m.Target,
+		Define:              m.Defines,
+		Metafile:            true,
+		Write:               false,
+		Bundle:              true,
+		Inject:              inject,
+		JSXMode:             api.JSXModeTransform,
+		Plugins:             plugins,
+		Incremental:         true,
+		Loader:              loader,
 		Watch: &api.WatchMode{
 			OnRebuild: func(result api.BuildResult) {
 				m.logger.Debug("Rebuild completed!")

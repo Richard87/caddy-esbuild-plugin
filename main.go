@@ -19,13 +19,13 @@ type Esbuild struct {
 	Loader     map[string]string `json:"loader,omitempty"`
 	FileHash   bool              `json:"file_hash,omitempty"`
 	Defines    map[string]string `json:"defines,omitempty"`
+	Sources    []api.EntryPoint  `json:"source,omitempty"`
 
 	logger       *zap.Logger
 	esbuild      *api.BuildResult
 	hashes       map[string]string
 	globalQuit   chan struct{}
 	lastDuration *time.Duration
-	Sources      []string `json:"source,omitempty"`
 }
 
 func (m *Esbuild) Cleanup() error {
@@ -49,11 +49,12 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 	m.logger = ctx.Logger(m)
 	m.hashes = make(map[string]string)
 	m.globalQuit = make(chan struct{})
-	go m.initEsbuild()
+	m.Defines = make(map[string]string)
+	m.initEsbuild()
 
 	var sources []string
 	for _, s := range m.Sources {
-		sources = append(sources, s)
+		sources = append(sources, s.InputPath)
 	}
 	var loaders []string
 	for ext, l := range m.Loader {
@@ -74,9 +75,6 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 func (m *Esbuild) Validate() error {
 	if len(m.Sources) == 0 {
 		return fmt.Errorf("no source file")
-	}
-	if m.Target == "" {
-		return fmt.Errorf("no target folder")
 	}
 
 	for _, l := range m.Loader {
