@@ -1,15 +1,18 @@
 {
-	order esbuild first
+	order esbuild after encode
 	debug
 	admin off
 }
 
 http://localhost:8090 {
+
+  encode zstd gzip
   file_server  {
     root example/public
   }
 
   esbuild {
+
     source ./example/src/index.js
     source ./example/src/global.scss
     live_reload

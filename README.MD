@@ -12,16 +12,17 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
 - v0.7.0: Enable hashed files with file_hash property 
 - v0.8.0: Enable defines 
 - v0.9.0: Ouptut alias 
-- v.0.10.0: Transparent compilation and NodePath configuration
+- v.0.11.0: Transparent compilation and NodePath configuration
 
 ## Configuration:
 `Caddyfile`:
 ```
 {
-  order esbuild first
+  order esbuild after encode
 }
 
 localhost:8080 {
+  encode zstd gzip
   file_server  {
     root example/public
   }
@@ -45,10 +46,11 @@ localhost:8080 {
 or a simplified version: 
 ```
 {
-  order esbuild first
+  order esbuild after encode
 }
 
 localhost:8080 {
+  encode zstd gzip
   file_server  {
     root example/public
   }
