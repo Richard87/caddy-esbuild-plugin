@@ -20,6 +20,7 @@ type Esbuild struct {
 	FileHash   bool              `json:"file_hash,omitempty"`
 	Defines    map[string]string `json:"defines,omitempty"`
 	Sources    []api.EntryPoint  `json:"source,omitempty"`
+	NodePaths  []string          `json:"n_ode_paths,omitempty"`
 
 	logger       *zap.Logger
 	esbuild      *api.BuildResult
@@ -67,7 +68,8 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 		zap.Strings("loaders", loaders),
 		zap.Bool("sass", m.Scss),
 		zap.Bool("env", m.Env),
-		zap.Bool("live_reload", m.LiveReload))
+		zap.Bool("live_reload", m.LiveReload),
+		zap.Strings("node_path", m.NodePaths))
 	return nil
 }
 

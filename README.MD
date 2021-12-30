@@ -37,6 +37,8 @@ localhost:8080 {
     loader .json json
     loader .js jsx
     define global window
+    node_path ./public/node_modules
+    node_path ../../node_modules
   }
 }
 ```

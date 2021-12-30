@@ -18,5 +18,6 @@ http://localhost:8090 {
     loader .png dataurl
     loader .svg file
     loader .json json
+    node_path example/node_modules
   }
 }

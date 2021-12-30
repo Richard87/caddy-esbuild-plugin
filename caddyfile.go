@@ -4,6 +4,7 @@ import (
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/evanw/esbuild/pkg/api"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -38,6 +39,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 	esbuild.FileHash = false
 	esbuild.Loader = make(map[string]string)
 	esbuild.Defines = make(map[string]string)
+	esbuild.NodePaths = []string{}
 	esbuild.Loader[".png"] = "file"
 	esbuild.Loader[".svg"] = "file"
 	esbuild.Loader[".js"] = "jsx"
@@ -132,8 +134,21 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 			value := h.Val()
 
 			esbuild.Defines[define] = value
-		}
+		case "node_path":
+			if !h.NextArg() {
+				return nil, h.Err("node_ath requires path: node_path ../node_modules")
+			}
 
+			path := h.Val()
+			esbuild.NodePaths = append(esbuild.NodePaths, path)
+		}
+	}
+
+	if len(esbuild.NodePaths) == 0 {
+		cwd, _ := os.Getwd()
+		pattern := filepath.Join(cwd, "*", "node_modules")
+		nodePaths, _ := filepath.Glob(pattern)
+		esbuild.NodePaths = nodePaths
 	}
 
 	return &esbuild, nil

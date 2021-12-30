@@ -54,10 +54,7 @@ func (m *Esbuild) createSassPlugin() *api.Plugin {
 
 					cwd, _ := os.Getwd()
 
-					globSearch := filepath.Join(cwd, "*", "node_modules")
-					nodeModules, err := filepath.Glob(globSearch)
-
-					err = comp.Option(libsass.WithSyntax(libsass.SCSSSyntax), libsass.Path(args.Path), libsass.IncludePaths(append(nodeModules, filepath.Dir(args.Path), cwd)))
+					err = comp.Option(libsass.WithSyntax(libsass.SCSSSyntax), libsass.Path(args.Path), libsass.IncludePaths(append(m.NodePaths, filepath.Dir(args.Path), cwd)))
 					if err != nil {
 						return api.OnLoadResult{}, fmt.Errorf("sass: unable to set include path: %s", err)
 					}

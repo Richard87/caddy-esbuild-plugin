@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"github.com/evanw/esbuild/pkg/api"
 	"go.uber.org/zap"
-	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -55,13 +53,9 @@ func (m *Esbuild) initEsbuild() {
 		entryName = "[name]-[hash]"
 	}
 
-	cwd, _ := os.Getwd()
-	pattern := filepath.Join(cwd, "*", "node_modules")
-	nodePaths, _ := filepath.Glob(pattern)
-
 	result := api.Build(api.BuildOptions{
 		EntryPointsAdvanced: m.Sources,
-		NodePaths:           nodePaths,
+		NodePaths:           m.NodePaths,
 		Sourcemap:           api.SourceMapLinked,
 		Outdir:              m.Target,
 		EntryNames:          entryName,
