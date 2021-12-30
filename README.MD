@@ -3,16 +3,17 @@
 This plugins watches and builds the source files continiusly in-memory. It includes a etag to cache in the browser to save bandwidth.
 
 ## Features:
-- [X] Live reload (v0.1.0)
-- [X] SASS (v0.2.2)
-- [X] Manifest.json (v0.3.0) `/<target>/manifest.json`, defaults to `/_build/manifest.json`
-- [X] Env support (v0.4.0)
-- [X] Multiple entrypoint (v0.5.0) (filename must be different)
-- [X] Refactor to routes (v0.5.0) (`route /_build {esbuild assets/index.js env auto_reload sass}`)
-- [X] Custom loader configuration (v0.6.0)
-- [X] Enable hashed files with file_hash property (v0.7.0)
-- [X] Enable defines (v0.8.0)
-- [X] Ouptut alias (v0.9.0)
+- v0.1.0: Live reload 
+- v0.2.2: SASS 
+- v0.3.0: Manifest.json `/<target>/manifest.json`, defaults to `/_build/manifest.json` 
+- v0.4.0: Env support 
+- v0.5.0: Multiple entrypoint (filename must be different) 
+- v0.5.0: Refactor to routes (`route /_build {esbuild assets/index.js env auto_reload sass}`) 
+- v0.6.0: Custom loader configuration 
+- v0.7.0: Enable hashed files with file_hash property 
+- v0.8.0: Enable defines 
+- v0.9.0: Ouptut alias 
+- v.0.10.0: Transparent compilation and NodePath configuration
 
 ## Configuration:
 `Caddyfile`:
