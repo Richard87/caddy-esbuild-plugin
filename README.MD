@@ -27,7 +27,7 @@ localhost:8080 {
   }
   esbuild {
     env
-    sass
+    scss
     live_reload
     target /_build
     source ./example/src/index.js
@@ -50,7 +50,7 @@ localhost:8080 {
   file_server  {
     root example/public
   }
-  esbuild ./example/src/index.js live_reload sass env ./example/src/index2.js
+  esbuild ./example/src/index.js live_reload scss env ./example/src/index2.js
 }
 ```
 

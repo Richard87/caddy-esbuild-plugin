@@ -30,7 +30,7 @@ func (m *Esbuild) initEsbuild() {
 		}
 	}
 
-	if m.Sass {
+	if m.Scss {
 		sassPlugin := m.createSassPlugin()
 		if sassPlugin == nil {
 			m.logger.Error("Failed to enable sass plugin, caddy must be compiled with CGO enabled!")

@@ -13,7 +13,7 @@ http://localhost:8090 {
     source ./example/src/index.js
     source ./example/src/index.css global
     live_reload
-    sass
+    scss
     env
     loader .png dataurl
     loader .svg file

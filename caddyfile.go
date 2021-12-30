@@ -34,7 +34,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 
 	esbuild.Target = "/_build"
 	esbuild.LiveReload = false
-	esbuild.Sass = false
+	esbuild.Scss = false
 	esbuild.FileHash = false
 	esbuild.Loader = make(map[string]string)
 	esbuild.Defines = make(map[string]string)
@@ -49,11 +49,11 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 			esbuild.FileHash = true
 		case "live_reload":
 			esbuild.LiveReload = true
-		case "sass":
+		case "scss":
 			if esbuild.hasSassSupport() == false {
 				return nil, h.Err("sass requires caddy to be compiled with CGO and libsass available")
 			}
-			esbuild.Sass = true
+			esbuild.Scss = true
 		case "env":
 			esbuild.Env = true
 		default:
@@ -72,11 +72,11 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 			esbuild.FileHash = true
 		case "live_reload":
 			esbuild.LiveReload = true
-		case "sass":
+		case "scss":
 			if esbuild.hasSassSupport() == false {
 				return nil, h.Err("sass requires caddy to be compiled with CGO and libsass available")
 			}
-			esbuild.Sass = true
+			esbuild.Scss = true
 		case "env":
 			esbuild.Env = true
 		case "source":

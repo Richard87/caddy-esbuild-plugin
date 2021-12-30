@@ -14,7 +14,7 @@ import (
 type Esbuild struct {
 	Target     string            `json:"target,omitempty"`
 	LiveReload bool              `json:"auto_reload,omitempty"`
-	Sass       bool              `json:"sass,omitempty"`
+	Scss       bool              `json:"scss,omitempty"`
 	Env        bool              `json:"env,omitempty"`
 	Loader     map[string]string `json:"loader,omitempty"`
 	FileHash   bool              `json:"file_hash,omitempty"`
@@ -65,7 +65,7 @@ func (m *Esbuild) Provision(ctx caddy.Context) error {
 		zap.String("target", m.Target),
 		zap.Strings("sources", sources),
 		zap.Strings("loaders", loaders),
-		zap.Bool("sass", m.Sass),
+		zap.Bool("sass", m.Scss),
 		zap.Bool("env", m.Env),
 		zap.Bool("live_reload", m.LiveReload))
 	return nil
