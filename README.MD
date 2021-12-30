@@ -8,7 +8,6 @@ This plugins watches and builds the source files continiusly in-memory. It inclu
 - v0.3.0: Manifest.json `/<target>/manifest.json`, defaults to `/_build/manifest.json` 
 - v0.4.0: Env support 
 - v0.5.0: Multiple entrypoint (filename must be different) 
-- v0.5.0: Refactor to routes (`route /_build {esbuild assets/index.js env auto_reload sass}`) 
 - v0.6.0: Custom loader configuration 
 - v0.7.0: Enable hashed files with file_hash property 
 - v0.8.0: Enable defines 
@@ -61,6 +60,7 @@ localhost:8080 {
 - If target is missing, assets will be available at `/_build`, check `/_build/manifest.json` for details. The source files will be available at the path from Caddyfile. For example `./example/src/global.scss` is available at `https://example.com/example/src/global.scss`, but will return compiled css content. The same with EcmaScript code.
 - Env support: It will scan any `.env`, `.env.<NODE_ENV>`, `.env.local`, `.env.<NODE_ENV>.local`, and the runtime environment for relevant variables.  
   It will however not watch them changes or auto-reload them. 
+- If no node_paths are specified, I will automatically use all node_modules paths found under current working directory
 
 ## Devlopment:
 
