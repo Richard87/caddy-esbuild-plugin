@@ -3,6 +3,7 @@ package caddy_esbuild_plugin
 import (
 	"fmt"
 	"github.com/evanw/esbuild/pkg/api"
+	"go.uber.org/zap"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -24,7 +25,7 @@ func (m *Esbuild) handleAsset(w http.ResponseWriter, r *http.Request, f api.Outp
 
 	w.WriteHeader(200)
 	_, _ = w.Write(f.Contents)
-	m.logger.Debug(fmt.Sprintf("esbuild handled %s", f.Path))
+	m.logger.Debug(fmt.Sprintf("esbuild handled %s", r.RequestURI), zap.String("source", f.Path))
 	return nil
 }
 

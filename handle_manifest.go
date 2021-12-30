@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"path/filepath"
+	"strings"
 )
 
 type Metafile struct {
@@ -54,23 +55,25 @@ func (m *Esbuild) handleManifest(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("ETag", etag)
 	w.Header().Set("Content-Type", "application/json")
 
-	var metafile = Metafile{}
-	if err := json.Unmarshal([]byte(m.esbuild.Metafile), &metafile); err != nil {
-		m.logger.Error("Failed to build manifest.json", zap.Error(err))
-		w.WriteHeader(500)
-		return nil
-	}
-
 	manifest := make(map[string]string)
 
-	for target, output := range metafile.Outputs {
+	for target, output := range m.metafile.Outputs {
 		source := output.EntryPoint
+		target, _ := filepath.Abs(target)
+		m.logger.Debug("Source", zap.String("source", source), zap.String("target", target))
+
+		if source != "" && m.Target == "" {
+			target = source
+			if !strings.HasPrefix(target, "/") {
+				target = "/" + target
+			}
+		}
+
 		if source == "" {
 			//target is in form ../../../../_build/index.js
 			source, _ = filepath.Abs(target)
 		}
 
-		target, _ := filepath.Abs(target)
 		manifest[source] = target
 	}
 

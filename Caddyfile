@@ -11,7 +11,7 @@ http://localhost:8090 {
 
   esbuild {
     source ./example/src/index.js
-    source ./example/src/index.css global
+    source ./example/src/global.scss
     live_reload
     scss
     env

@@ -7,6 +7,7 @@ import (
 	"github.com/evanw/esbuild/pkg/api"
 	"go.uber.org/zap"
 	"net/http"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -27,6 +28,7 @@ type Esbuild struct {
 	hashes       map[string]string
 	globalQuit   chan struct{}
 	lastDuration *time.Duration
+	metafile     *Metafile
 }
 
 func (m *Esbuild) Cleanup() error {
@@ -94,19 +96,51 @@ func (m *Esbuild) ServeHTTP(w http.ResponseWriter, r *http.Request, h caddyhttp.
 		return h.ServeHTTP(w, r)
 	}
 
-	if r.RequestURI == m.Target+"/__livereload" {
+	outdir := m.Target
+	if outdir == "" {
+		outdir = "/_build"
+	}
+
+	file := r.RequestURI
+	if index := strings.Index(file, "?"); index > 1 {
+		file = file[:index-1]
+	}
+
+	if file == outdir+"/__livereload" {
 		_ = m.handleLiveReload(w, r)
 		return nil
 	}
-	if r.RequestURI == m.Target+"/manifest.json" {
+	if file == outdir+"/manifest.json" {
 		_ = m.handleManifest(w, r)
 		return nil
 	}
 
 	if m.esbuild != nil {
 		for _, f := range m.esbuild.OutputFiles {
-			if strings.Index(r.RequestURI, f.Path) == 0 {
+			if file == f.Path {
 				return m.handleAsset(w, r, f)
+			}
+		}
+
+		if m.Target == "" {
+			for target, output := range m.metafile.Outputs {
+				entrypoint := output.EntryPoint
+				if !strings.HasPrefix(entrypoint, "/") {
+					entrypoint = "/" + entrypoint
+				}
+				target, _ = filepath.Abs(target)
+				m.logger.Debug("Handling output files",
+					zap.String("file", file),
+					zap.String("entrypoint", entrypoint),
+					zap.String("target", target))
+
+				if file == entrypoint && file != "/" {
+					for _, f := range m.esbuild.OutputFiles {
+						if target == f.Path {
+							return m.handleAsset(w, r, f)
+						}
+					}
+				}
 			}
 		}
 	}

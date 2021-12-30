@@ -52,12 +52,17 @@ func (m *Esbuild) handleLiveReload(w http.ResponseWriter, r *http.Request) error
 }
 
 func (m *Esbuild) createAutoloadShimFile() (string, error) {
+
+	outdir := m.Target
+	if outdir == "" {
+		outdir = "/_build"
+	}
 	livereload := "(() => {const es = new EventSource('%s/__livereload'); es.addEventListener('message', e => e.data === 'reload' && (es.close() || location.reload()))})()"
 	file, err := ioutil.TempFile(os.TempDir(), "caddy-esbuild-shim-*.js")
 	if err != nil {
 		return "", fmt.Errorf("autoload: failed to create tmpfile: %s", err)
 	}
-	_, err = file.Write([]byte(fmt.Sprintf(livereload, m.Target)))
+	_, err = file.Write([]byte(fmt.Sprintf(livereload, outdir)))
 	if err != nil {
 		return "", fmt.Errorf("autoload: failed to write shim: %s", err)
 	}

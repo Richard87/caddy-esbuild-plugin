@@ -33,7 +33,7 @@ func parseCaddyfileEsbuild(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler,
 
 	var esbuild Esbuild
 
-	esbuild.Target = "/_build"
+	esbuild.Target = ""
 	esbuild.LiveReload = false
 	esbuild.Scss = false
 	esbuild.FileHash = false

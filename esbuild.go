@@ -3,6 +3,7 @@ package caddy_esbuild_plugin
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/evanw/esbuild/pkg/api"
 	"go.uber.org/zap"
@@ -53,13 +54,18 @@ func (m *Esbuild) initEsbuild() {
 		entryName = "[name]-[hash]"
 	}
 
+	outdir := m.Target
+	if outdir == "" {
+		outdir = "/_build"
+	}
+
 	result := api.Build(api.BuildOptions{
 		EntryPointsAdvanced: m.Sources,
 		NodePaths:           m.NodePaths,
 		Sourcemap:           api.SourceMapLinked,
-		Outdir:              m.Target,
+		Outdir:              outdir,
 		EntryNames:          entryName,
-		PublicPath:          m.Target,
+		PublicPath:          outdir,
 		Define:              m.Defines,
 		Metafile:            true,
 		Write:               false,
@@ -99,7 +105,13 @@ func (m *Esbuild) onBuild(result api.BuildResult, duration *time.Duration) {
 	} else {
 		m.logger.Info(fmt.Sprintf("watch build succeeded in %dms: %d warnings\n", duration.Milliseconds(), len(result.Warnings)))
 	}
-	m.esbuild = &result
+
+	var metafile = Metafile{}
+	if err := json.Unmarshal([]byte(m.esbuild.Metafile), &metafile); err != nil {
+		m.logger.Error("Failed to build manifest.json", zap.Error(err))
+	} else {
+		m.metafile = &metafile
+	}
 }
 
 func (m *Esbuild) Rebuild() {

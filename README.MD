@@ -57,6 +57,7 @@ localhost:8080 {
 ```
 
 ## Documentation:
+- If target is missing, assets will be available at `/_build`, check `/_build/manifest.json` for details. The source files will be available at the path from Caddyfile. For example `./example/src/global.scss` is available at `https://example.com/example/src/global.scss`, but will return compiled css content. The same with EcmaScript code.
 - Env support: It will scan any `.env`, `.env.<NODE_ENV>`, `.env.local`, `.env.<NODE_ENV>.local`, and the runtime environment for relevant variables.  
   It will however not watch them changes or auto-reload them. 
 
